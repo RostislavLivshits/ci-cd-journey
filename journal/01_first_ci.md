@@ -1,5 +1,65 @@
 # First CI Pipeline
 
+## Добавить workflow GitHub Actions
+Находясь в папке проекта ci_demo, создай папки и файл:
+```bash
+mkdir -p .github/workflows
+touch .github/workflows/flutter_ci.yml
+```
+
+Открой файл в редакторе (можно VS Code):
+```bash
+code .
+```
+
+И вставь в .github/workflows/flutter_ci.yml:
+```YAML
+name: Flutter CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test
+```
+
+## Commit + push (через CLI)
+```bash
+git status
+git add .github/workflows/flutter_ci.yml
+git commit -m "Add Flutter CI workflow"
+git push
+```
+### Проверить результат
+Открой GitHub репозиторий → вкладка Actions.
+
+Ты должен увидеть workflow Flutter CI и статус:
+
+✅ зелёный — отлично
+
+❌ красный — тоже отлично (будем читать логи как инженеры)
+
+
 ## Что было сделано
 - Создан Flutter проект `ci_demo`
 - Настроен GitHub Actions workflow
