@@ -41,6 +41,15 @@ jobs:
 
       - name: Run tests
         run: flutter test
+        
+      - name: Build APK (release)
+        run: flutter build apk --release
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
 ```
 
 ## Commit + push (через CLI)
@@ -95,3 +104,15 @@ Actual: Found 0 widgets with text "1"
 - Если команда возвращает exit code != 0, job падает.
 - Падение теста = красный CI.
 - Логи CI читаются сверху вниз, важна первая ошибка.
+
+## Build artifact (APK) in CI
+
+### Зачем
+Чтобы CI проверял, что release build реально собирается, а не только что тесты проходят.
+
+### Что добавил в workflow
+- flutter build apk --release
+- upload-artifact: build/app/outputs/flutter-apk/app-release.apk
+
+### Результат
+После каждого run можно скачать APK из GitHub Actions → Artifacts.
