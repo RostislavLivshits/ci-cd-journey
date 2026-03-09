@@ -151,3 +151,143 @@ Environment variables
 * deployment
 * secrets
 * infrastructure
+
+
+---
+
+# 8. Monorepo Architecture
+
+Некоторые проекты используют **monorepo**, где несколько частей системы находятся в одном репозитории.
+
+Пример структуры:
+
+```
+repo/
+ ├ backend/        (Go service)
+ ├ mobile/         (Flutter app)
+ ├ web/            (optional frontend)
+ ├ .github/
+ └ Makefile
+```
+
+Такой подход позволяет:
+
+* управлять backend и mobile в одном месте
+* синхронизировать изменения API
+* упростить CI/CD
+
+---
+
+# 9. Unified Makefile
+
+В monorepo часто используется **единый Makefile**, который становится интерфейсом разработки.
+
+Пример:
+
+```
+.PHONY: help backend-test mobile-test ci
+
+backend-test:
+	cd backend && make test
+
+mobile-test:
+	cd mobile && flutter test
+
+backend-lint:
+	cd backend && golangci-lint run
+
+mobile-analyze:
+	cd mobile && flutter analyze
+
+ci: backend-lint backend-test mobile-analyze mobile-test
+```
+
+Теперь разработчик может запустить:
+
+```
+make ci
+```
+
+И будут выполнены проверки:
+
+* Go lint
+* Go tests
+* Flutter analyze
+* Flutter tests
+
+---
+
+# 10. Unified Developer Workflow
+
+Единый Makefile позволяет использовать **одинаковые команды**:
+
+```
+локально
+↓
+make ci
+
+CI pipeline
+↓
+make ci
+```
+
+Это предотвращает проблему:
+
+```
+локально работает
+CI падает
+```
+
+Потому что используется один и тот же набор команд.
+
+---
+
+# 11. Simplified CI
+
+CI pipeline в этом случае становится очень простым:
+
+```
+- name: Run CI
+  run: make ci
+```
+
+Вся логика проверок находится в Makefile.
+
+---
+
+# Когда используется такой подход
+
+Unified Makefile чаще встречается в проектах, где есть:
+
+* backend (Go / Node / Python)
+* mobile (Flutter / React Native)
+* web frontend
+* shared libraries
+
+Это делает репозиторий удобнее для разработчиков.
+
+---
+
+# Роль Makefile
+
+В такой архитектуре Makefile становится:
+
+**developer interface**
+
+к проекту.
+
+Он описывает стандартные команды:
+
+```
+make build
+make test
+make lint
+make ci
+make deploy
+```
+
+и позволяет запускать их одинаково:
+
+* локально
+* в CI
+* в deployment pipeline
